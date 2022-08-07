@@ -22,9 +22,7 @@ jobs:
         uses: silverhand-io/actions-node-pnpm-run-steps@v1.2.3
 
       - name: Package
-        run: |
-          ./link-mock-connectors.sh
-          ./package.sh
+        run: ./package.sh
 
       - uses: actions/upload-artifact@v3
         with:
@@ -95,7 +93,7 @@ jobs:
           INTEGRATION_TEST: true
           NODE_ENV: production
           DB_URL_DEFAULT: postgres://postgres:postgres@localhost:5432
-          ADDITIONAL_CONNECTOR_PACKAGES: '@logto/connector-mock-sms,@logto/connector-mock-email,@logto/connector-mock-social'
+          ADDITIONAL_CONNECTOR_PACKAGES: '../../../connector-mock-sms/lib,../../../connector-mock-mail/lib,../../../connector-mock-social/lib'
 
       - name: Sleep for 5 seconds
         run: sleep 5
