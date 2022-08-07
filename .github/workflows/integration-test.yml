@@ -23,7 +23,41 @@ jobs:
 
       - name: Package
         run: |
-          ./link-mock-connectors.sh
+          #echo DEBUG .npmrc
+          #cat /home/runner/work/_temp/.npmrc
+          #echo
+          
+          #echo DEBUG npm config ls -l
+          #npm config ls -l
+          #echo
+          
+          cd packages/core
+          
+          echo Add the mock connectors to core for integration tests only
+          echo DEBUG Lerna add @logto/connector-mock-sms
+          pnpm i ../connector-mock-sms
+          echo 
+          
+          echo DEBUG Lerna add @logto/connector-mock-email
+          pnpm i ../connector-mock-email
+          echo
+          
+          echo DEBUG Lerna add @logto/connector-mock-social
+          pnpm i ../connector-mock-social
+          echo
+          
+          #echo DEBUG cat pnpm-lock.yaml
+          #cat pnpm-lock.yaml
+          #echo ENDING
+          #echo
+          
+          cd -
+          
+          echo DEBUG Lerna bootstrap --no-ci for install --no-frozen-lockfile to update pnpm-lock.yaml
+          pnpm i --no-frozen-lockfile --lockfile-only
+          echo
+          
+          echo DEBUG Package as usual
           ./package.sh
 
       - uses: actions/upload-artifact@v3
