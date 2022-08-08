@@ -21,9 +21,25 @@ jobs:
       - name: Setup Node and pnpm
         uses: silverhand-io/actions-node-pnpm-run-steps@v1.2.3
 
+      - name: Add the mock connectors for integration tests only
+        run: |
+          echo CI
+          echo $CI
+          echo 
+          
+          echo GITHUB_ACTIONS
+          echo $GITHUB_ACTIONS
+          echo
+          
+          lerna add @logto/connector-mock-sms --scope=@logto/core --loglevel=silly
+          lerna add @logto/connector-mock-email --scope=@logto/core --loglevel=silly
+          lerna add @logto/connector-mock-social --scope=@logto/core --loglevel=silly
+        env:
+          CI: 0
+          GITHUB_ACTIONS: 0
+
       - name: Package
         run: |
-          ./link-mock-connectors.sh
           ./package.sh
 
       - uses: actions/upload-artifact@v3
