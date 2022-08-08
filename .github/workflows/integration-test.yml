@@ -23,24 +23,14 @@ jobs:
 
       - name: Add the mock connectors for integration tests only
         run: |
-          echo CI
-          echo $CI
-          echo 
-          
-          echo GITHUB_ACTIONS
-          echo $GITHUB_ACTIONS
-          echo
-          
-          lerna add @logto/connector-mock-sms --scope=@logto/core --loglevel=silly
-          lerna add @logto/connector-mock-email --scope=@logto/core --loglevel=silly
-          lerna add @logto/connector-mock-social --scope=@logto/core --loglevel=silly
-        env:
-          CI: 0
-          GITHUB_ACTIONS: 0
+          unset CI
+          unset GITHUB_ACTIONS
+          lerna add @logto/connector-mock-sms --scope=@logto/core
+          lerna add @logto/connector-mock-email --scope=@logto/core
+          lerna add @logto/connector-mock-social --scope=@logto/core
 
       - name: Package
-        run: |
-          ./package.sh
+        run: ./package.sh
 
       - uses: actions/upload-artifact@v3
         with:
