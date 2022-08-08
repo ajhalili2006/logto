@@ -23,11 +23,12 @@ jobs:
 
       - name: Add the mock connectors for integration tests only
         run: |
-          unset CI
-          unset GITHUB_ACTIONS
           lerna add @logto/connector-mock-sms --scope=@logto/core
           lerna add @logto/connector-mock-email --scope=@logto/core
           lerna add @logto/connector-mock-social --scope=@logto/core
+        env:
+          CI: ''
+          GITHUB_ACTIONS: ''
 
       - name: Package
         run: ./package.sh
