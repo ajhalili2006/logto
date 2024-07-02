@@ -18,7 +18,6 @@ const application_details = {
   refresh_token_settings: 'Auffrischungstoken',
   refresh_token_settings_description:
     'Verwalten Sie die Auffrischungstoken-Regeln für diese Anwendung.',
-  application_roles: 'Rollen von Maschine zu Maschine',
   machine_logs: 'Maschinenprotokolle',
   application_name: 'Anwendungsname',
   application_name_placeholder: 'Meine App',
@@ -143,9 +142,6 @@ const application_details = {
     delete_description:
       'Diese Aktion entfernt diese Rolle von dieser Maschinen-zu-Maschinen-App. Die Rolle existiert zwar weiterhin, ist jedoch nicht mehr mit dieser Maschinen-zu-Maschinen-App verknüpft.',
     deleted: '{{name}} wurde erfolgreich von diesem Benutzer entfernt.',
-    assign_title: 'Rollen von Maschine zu Maschine an {{name}} zuweisen',
-    assign_subtitle:
-      'Maschine-zu-Maschine-Apps müssen Maschine-zu-Maschine-Rollen haben, um auf zugehörige API-Ressourcen zuzugreifen.',
     assign_role_field: 'Rollen von Maschine zu Maschine zuweisen',
     role_search_placeholder: 'Nach Rollennamen suchen',
     added_text: '{{value, number}} hinzugefügt',

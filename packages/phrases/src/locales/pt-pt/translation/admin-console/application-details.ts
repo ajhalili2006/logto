@@ -17,7 +17,6 @@ const application_details = {
   refresh_token_settings: 'Token de atualização',
   refresh_token_settings_description:
     'Gerir as regras de token de atualização para esta aplicação.',
-  application_roles: 'Funções de máquina a máquina',
   machine_logs: 'Registos da máquina',
   application_name: 'Nome da aplicação',
   application_name_placeholder: 'Ex: Site da Empresa',
@@ -139,8 +138,6 @@ const application_details = {
       'Esta ação irá remover esta função desta aplicação entre máquinas. A função em si ainda existirá, mas não será mais associada a esta aplicação entre as máquinas.',
     deleted: '{{name}} foi removido com sucesso deste utilizador.',
     assign_title: 'Atribuir funções de máquina a máquina a {{name}}',
-    assign_subtitle:
-      'As aplicações de máquina a máquina devem ter funções de máquina a máquina para aceder aos recursos de API relacionados.',
     assign_role_field: 'Atribuir funções de máquina a máquina',
     role_search_placeholder: 'Pesquisar por nome de função',
     added_text: '{{value, number}} adicionado',

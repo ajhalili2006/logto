@@ -26,3 +26,9 @@ export const organizationRoleLink =
   '/docs/recipes/organizations/understand-how-it-works/#organization-role';
 export const organizationPermissionLink =
   '/docs/recipes/organizations/understand-how-it-works/#organization-permission';
+export const profilePropertyReferenceLink = '/docs/references/users/#profile-1';
+export const organizationJit = Object.freeze({
+  enterpriseSso:
+    '/docs/recipes/organizations/just-in-time-provisioning/#enterprise-sso-provisioning',
+  emailDomain: '/docs/recipes/organizations/just-in-time-provisioning/#email-domain-provisioning',
+});

@@ -6,7 +6,7 @@ import type {
   SignUp,
   SignIn,
 } from '@logto/schemas';
-import { SignInMode, SignInIdentifier, MfaPolicy } from '@logto/schemas';
+import { SignInMode, SignInIdentifier, MfaPolicy, AgreeToTermsPolicy } from '@logto/schemas';
 
 export const mockColor: Color = {
   primaryColor: '#000',
@@ -91,10 +91,12 @@ export const mockSignInExperience: SignInExperience = {
   signInMode: SignInMode.SignInAndRegister,
   customCss: null,
   customContent: {},
+  agreeToTermsPolicy: AgreeToTermsPolicy.Automatic,
   passwordPolicy: {},
   mfa: {
     policy: MfaPolicy.UserControlled,
     factors: [],
   },
   singleSignOnEnabled: true,
+  socialSignIn: {},
 };

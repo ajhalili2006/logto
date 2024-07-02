@@ -17,7 +17,6 @@ const application_details = {
   refresh_token_settings: 'Token de actualización',
   refresh_token_settings_description:
     'Gestiona las reglas del token de actualización para esta aplicación.',
-  application_roles: 'Roles de máquina a máquina',
   machine_logs: 'Registros de Máquina',
   application_name: 'Nombre de Aplicación',
   application_name_placeholder: 'Mi App',
@@ -140,8 +139,6 @@ const application_details = {
       'Esta acción eliminará este rol de esta aplicación de máquina a máquina. El rol seguirá existiendo, pero ya no estará asociado con esta aplicación de máquina a máquina.',
     deleted: 'Se ha eliminado correctamente {{name}} de este usuario.',
     assign_title: 'Asignar roles de máquina a máquina a {{name}}',
-    assign_subtitle:
-      'Las aplicaciones de máquina a máquina deben tener roles de máquina a máquina para acceder a los recursos de la API relacionados.',
     assign_role_field: 'Asignar roles de máquina a máquina',
     role_search_placeholder: 'Buscar por nombre de rol',
     added_text: '{{value, number}} añadido',

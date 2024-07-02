@@ -1,7 +1,5 @@
-import { type AdminConsoleKey } from '@logto/phrases';
 import type { RoleResponse, UserProfileResponse, Application } from '@logto/schemas';
 import { RoleType } from '@logto/schemas';
-import { cond } from '@silverhand/essentials';
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
@@ -29,19 +27,10 @@ type Props = (
     }
 ) & {
   readonly onClose: (success?: boolean) => void;
-  /**
-   * The overrides for the modal text.
-   * If specified, the title will be overridden.
-   * If not specified, the default title will vary based on the type.
-   */
-  readonly modalTextOverrides?: {
-    title?: AdminConsoleKey;
-    subtitle?: AdminConsoleKey;
-  };
   readonly isSkippable?: boolean;
 };
 
-function RoleAssignmentModal({ entity, onClose, type, modalTextOverrides, isSkippable }: Props) {
+function RoleAssignmentModal({ entity, onClose, type, isSkippable }: Props) {
   const { t } = useTranslation(undefined, { keyPrefix: 'admin_console' });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -80,28 +69,24 @@ function RoleAssignmentModal({ entity, onClose, type, modalTextOverrides, isSkip
     >
       <ModalLayout
         title={
-          cond(modalTextOverrides?.title) ?? (
-            <DangerousRaw>
-              {t(
-                isForUser
-                  ? 'user_details.roles.assign_title'
-                  : 'application_details.roles.assign_title',
-                { name: isForUser ? getUserTitle(entity) : entity.name }
-              )}
-            </DangerousRaw>
-          )
+          <DangerousRaw>
+            {t(
+              isForUser
+                ? 'user_details.roles.assign_title'
+                : 'application_details.roles.assign_title',
+              { name: isForUser ? getUserTitle(entity) : entity.name }
+            )}
+          </DangerousRaw>
         }
         subtitle={
-          cond(modalTextOverrides?.subtitle) ?? (
-            <DangerousRaw>
-              {t(
-                isForUser
-                  ? 'user_details.roles.assign_subtitle'
-                  : 'application_details.roles.assign_subtitle',
-                { name: isForUser ? getUserTitle(entity) : entity.name }
-              )}
-            </DangerousRaw>
-          )
+          <DangerousRaw>
+            {t(
+              isForUser
+                ? 'user_details.roles.assign_subtitle'
+                : 'application_details.roles.assign_subtitle',
+              { name: isForUser ? getUserTitle(entity) : entity.name }
+            )}
+          </DangerousRaw>
         }
         size="large"
         footer={
@@ -147,11 +132,7 @@ function RoleAssignmentModal({ entity, onClose, type, modalTextOverrides, isSkip
               a: <TextLink to="/roles/create" />,
             }}
           >
-            {t(
-              isForUser
-                ? 'user_details.roles.create_user_role_hint'
-                : 'applications.m2m_role_assignment.role_creation_hint'
-            )}
+            {t('roles.role_creation_hint')}
           </Trans>
         </div>
       </ModalLayout>
