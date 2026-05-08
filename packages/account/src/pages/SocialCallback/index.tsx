@@ -26,6 +26,7 @@ const SocialCallback = () => {
   const {
     accountCenterSettings,
     experienceSettings,
+    isLoadingExperience,
     refreshUserInfo,
     setToast,
     verificationId,
@@ -177,17 +178,21 @@ const SocialCallback = () => {
     t,
   ]);
 
+  if (isLoadingExperience) {
+    return <GlobalLoading />;
+  }
+
+  if (!accountCenterSettings || !experienceSettings) {
+    return <ErrorPage titleKey="error.something_went_wrong" />;
+  }
+
   if (
-    !accountCenterSettings?.enabled ||
+    !accountCenterSettings.enabled ||
     accountCenterSettings.fields.social !== AccountCenterControlValue.Edit
   ) {
     return (
       <ErrorPage titleKey="error.something_went_wrong" messageKey="error.feature_not_enabled" />
     );
-  }
-
-  if (!experienceSettings) {
-    return <GlobalLoading />;
   }
 
   if (!connectorId || !connector) {
