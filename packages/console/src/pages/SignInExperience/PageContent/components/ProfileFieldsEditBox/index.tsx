@@ -34,12 +34,24 @@ type Props<TFieldValues extends FieldValues, TName extends FieldArrayPath<TField
   /** Optional hint rendered below the editor (e.g. a link back to the catalog setup page). */
   readonly hint?: React.ReactNode;
   readonly onFieldsChange?: () => void;
+  /**
+   * Returns a localized hint string when the given field name is currently not allowed, or
+   * `undefined` when the field is allowed. Disabled fields stay visible but cannot be added or
+   * removed; if already added, the row is shown in a disabled state with a tooltip.
+   */
+  readonly getFieldDisabledReason?: (fieldName: string) => string | undefined;
 };
 
 function ProfileFieldsEditBox<
   TFieldValues extends FieldValues,
   TName extends FieldArrayPath<TFieldValues>,
->({ name, addProfileFieldsButtonTitle, hint, onFieldsChange }: Props<TFieldValues, TName>) {
+>({
+  name,
+  addProfileFieldsButtonTitle,
+  hint,
+  onFieldsChange,
+  getFieldDisabledReason,
+}: Props<TFieldValues, TName>) {
   const { control } = useFormContext<TFieldValues>();
   const getI18nLabel = useI18nFieldLabel();
 
@@ -92,37 +104,48 @@ function ProfileFieldsEditBox<
   return (
     <div>
       <DragDropProvider>
-        {fields.map(({ id }, index) => (
-          <DraggableItem
-            key={id}
-            id={id}
-            sortIndex={index}
-            moveItem={(from, to) => {
-              onFieldsChange?.();
-              swap(from, to);
-            }}
-            className={styles.draggleItemContainer}
-          >
-            <Controller
-              control={control}
-              // eslint-disable-next-line no-restricted-syntax -- indexing into a FieldArrayPath is not representable with the FieldPath type
-              name={`${name}.${index}` as never}
-              render={({ field: { value } }) => {
-                // eslint-disable-next-line no-restricted-syntax -- Controller's value type is generic based on FieldPath which can't narrow to our known shape
-                const fieldName = (value as { name: string }).name;
-                return (
-                  <ProfileFieldItem
-                    label={fieldLabelByName.get(fieldName) ?? fieldName}
-                    onDelete={() => {
-                      onFieldsChange?.();
-                      remove(index);
-                    }}
-                  />
-                );
+        {fields.map(({ id }, index) => {
+          const fieldValue = selectedValue?.[index];
+          const currentFieldName = fieldValue?.name;
+          const disabledReason = currentFieldName
+            ? getFieldDisabledReason?.(currentFieldName)
+            : undefined;
+          const isDisabled = Boolean(disabledReason);
+          return (
+            <DraggableItem
+              key={id}
+              id={id}
+              sortIndex={index}
+              isDragDisabled={isDisabled}
+              moveItem={(from, to) => {
+                onFieldsChange?.();
+                swap(from, to);
               }}
-            />
-          </DraggableItem>
-        ))}
+              className={styles.draggleItemContainer}
+            >
+              <Controller
+                control={control}
+                // eslint-disable-next-line no-restricted-syntax -- indexing into a FieldArrayPath is not representable with the FieldPath type
+                name={`${name}.${index}` as never}
+                render={({ field: { value } }) => {
+                  // eslint-disable-next-line no-restricted-syntax -- Controller's value type is generic based on FieldPath which can't narrow to our known shape
+                  const fieldName = (value as { name: string }).name;
+                  return (
+                    <ProfileFieldItem
+                      label={fieldLabelByName.get(fieldName) ?? fieldName}
+                      isDisabled={isDisabled}
+                      disabledHint={disabledReason}
+                      onDelete={() => {
+                        onFieldsChange?.();
+                        remove(index);
+                      }}
+                    />
+                  );
+                }}
+              />
+            </DraggableItem>
+          );
+        })}
       </DragDropProvider>
       {availableFields.length > 0 && (
         <ActionMenu
@@ -130,18 +153,24 @@ function ProfileFieldsEditBox<
           dropdownHorizontalAlign="start"
           dropdownClassName={styles.addProfileFieldsDropdown}
         >
-          {availableFields.map(({ name, label }) => (
-            <DropdownItem
-              key={name}
-              onClick={() => {
-                onFieldsChange?.();
-                // eslint-disable-next-line no-restricted-syntax -- the runtime shape matches the caller's array element
-                append({ name } as never);
-              }}
-            >
-              {label || getI18nLabel(name)}
-            </DropdownItem>
-          ))}
+          {availableFields.map((field) => {
+            const { name: fieldName, label } = field;
+            const disabledReason = getFieldDisabledReason?.(fieldName);
+            return (
+              <DropdownItem
+                key={fieldName}
+                isDisabled={Boolean(disabledReason)}
+                tooltip={disabledReason}
+                onClick={() => {
+                  onFieldsChange?.();
+                  // eslint-disable-next-line no-restricted-syntax -- the runtime shape matches the caller's array element
+                  append({ name: fieldName } as never);
+                }}
+              >
+                {label || getI18nLabel(fieldName)}
+              </DropdownItem>
+            );
+          })}
         </ActionMenu>
       )}
       {hint && <div className={styles.setUpHint}>{hint}</div>}
