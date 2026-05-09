@@ -1,4 +1,5 @@
 import {
+  type AccountCenter,
   type SignInExperience,
   type UpdateCustomProfileFieldData,
   type CustomProfileFieldUnion,
@@ -12,6 +13,12 @@ import type Queries from '#src/tenants/Queries.js';
 import assertThat from '#src/utils/assert-that.js';
 
 import { validateCustomProfileFieldData } from './utils.js';
+
+type ProfileFieldsList = ReadonlyArray<{ name: string }>;
+type NormalizableProfileFields =
+  | SignInExperience['signUpProfileFields']
+  | AccountCenter['profileFields']
+  | undefined;
 
 export const createCustomProfileFieldsLibrary = (queries: Queries) => {
   const {
@@ -47,44 +54,16 @@ export const createCustomProfileFieldsLibrary = (queries: Queries) => {
     });
   };
 
-  const updateCustomProfileFieldsSieOrder = async (data: UpdateCustomProfileFieldSieOrder[]) => {
-    const names = data.map(({ name }) => name);
-    const profileFields = await findCustomProfileFieldsByNames(names);
-    const notExistsNames = names.filter(
-      (name) => !profileFields.some((field) => field.name === name)
-    );
-
-    assertThat(
-      profileFields.length === names.length,
-      new RequestError({
-        code: 'custom_profile_fields.entity_not_exists_with_names',
-        names: notExistsNames.join(', '),
-      })
-    );
-
-    return updateFieldOrderInSignInExperience(data);
-  };
-
-  /**
-   * Validate and normalize the `signUpProfileFields` config from a Sign-in Experience patch body.
-   *
-   * Returns `undefined` when the dev feature is off (the field is silently dropped) so callers can
-   * conditionally spread the value into the update payload without changing legacy behavior.
-   */
-  const normalizeSignUpProfileFields = async (
-    signUpProfileFields: SignInExperience['signUpProfileFields'] | undefined
-  ): Promise<SignInExperience['signUpProfileFields'] | undefined> => {
-    if (!EnvSet.values.isDevFeaturesEnabled) {
-      return undefined;
-    }
-    if (!signUpProfileFields) {
-      return signUpProfileFields;
+  const validateProfileFieldsList = async (fields: ProfileFieldsList) => {
+    if (fields.length === 0) {
+      return;
     }
 
-    const catalog = await queries.customProfileFields.findAllCustomProfileFields();
-    const names = signUpProfileFields.map(({ name }) => name);
-    const validNames = new Set(catalog.map(({ name }) => name));
-    const missing = [...new Set(names.filter((name) => !validNames.has(name)))];
+    const names = fields.map(({ name }) => name);
+    const uniqueNames = [...new Set(names)];
+    const profileFields = await findCustomProfileFieldsByNames(uniqueNames);
+    const existingNames = new Set(profileFields.map(({ name }) => name));
+    const missing = uniqueNames.filter((name) => !existingNames.has(name));
     assertThat(
       missing.length === 0,
       new RequestError({
@@ -93,21 +72,43 @@ export const createCustomProfileFieldsLibrary = (queries: Queries) => {
       })
     );
 
-    const duplicateNames = [
-      ...new Set(names.filter((name, index) => names.indexOf(name) !== index)),
-    ];
+    const duplicateNames = uniqueNames.filter(
+      (name) => names.indexOf(name) !== names.lastIndexOf(name)
+    );
     assertThat(
       duplicateNames.length === 0,
       new RequestError(
         {
           code: 'request.invalid_input',
-          details: `Duplicate sign-up profile field names: ${duplicateNames.join(', ')}`,
+          details: `Duplicate profile field names: ${duplicateNames.join(', ')}`,
         },
         { duplicateNames }
       )
     );
+  };
 
-    return signUpProfileFields;
+  const updateCustomProfileFieldsSieOrder = async (data: UpdateCustomProfileFieldSieOrder[]) => {
+    await validateProfileFieldsList(data);
+
+    return updateFieldOrderInSignInExperience(data);
+  };
+
+  /**
+   * Returns `undefined` when the dev feature is off (the field is silently dropped) so callers can
+   * conditionally spread the value into the update payload without changing legacy behavior.
+   */
+  const normalizeProfileFields = async <ProfileFields extends NormalizableProfileFields>(
+    profileFields: ProfileFields
+  ): Promise<ProfileFields | undefined> => {
+    if (!EnvSet.values.isDevFeaturesEnabled) {
+      return undefined;
+    }
+    if (!profileFields) {
+      return profileFields;
+    }
+
+    await validateProfileFieldsList(profileFields);
+    return profileFields;
   };
 
   return {
@@ -115,6 +116,6 @@ export const createCustomProfileFieldsLibrary = (queries: Queries) => {
     createCustomProfileFieldsBatch,
     updateCustomProfileField,
     updateCustomProfileFieldsSieOrder,
-    normalizeSignUpProfileFields,
+    normalizeProfileFields,
   };
 };
