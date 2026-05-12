@@ -1,3 +1,5 @@
+import { CustomUiCspSourceValidationErrorCode } from '@logto/core-kit';
+
 import { EnvSet } from '#src/env-set/index.js';
 import RequestError from '#src/errors/RequestError/index.js';
 
@@ -33,6 +35,23 @@ describe('normalizeCustomUiCsp()', () => {
 
     expect(() => normalizeCustomUiCsp({ scriptSrc: ['wss://events.example.com'] })).toThrow(
       RequestError
+    );
+  });
+
+  it('should expose validation error code in data and readable description in message', () => {
+    expect(() => normalizeCustomUiCsp({ scriptSrc: ['wss://events.example.com'] })).toThrow(
+      new RequestError(
+        {
+          code: 'request.invalid_input',
+          details:
+            'Invalid customUiCsp.scriptSrc source "wss://events.example.com": Unsupported scheme',
+        },
+        {
+          directive: 'scriptSrc',
+          source: 'wss://events.example.com',
+          validationErrorCode: CustomUiCspSourceValidationErrorCode.UnsupportedScheme,
+        }
+      )
     );
   });
 
