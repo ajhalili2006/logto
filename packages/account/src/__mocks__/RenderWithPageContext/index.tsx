@@ -140,7 +140,15 @@ export const mockUserInfo = {
 } satisfies Partial<UserProfileResponse>;
 
 const noopAsync = async (): Promise<void> => undefined;
-const clone = <T,>(value: T): T => structuredClone(value);
+const clone = <T,>(value: T): T => {
+  if (typeof structuredClone === 'function') {
+    return structuredClone(value);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const clonedValue: T = JSON.parse(JSON.stringify(value));
+  return clonedValue;
+};
 
 export const createMockPageContext = (
   overrides: Partial<PageContextType> = {}
