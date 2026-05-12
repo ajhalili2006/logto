@@ -5,7 +5,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import CloudUploadIcon from '@/assets/icons/cloud-upload.svg?react';
 import CustomCssEditorField from '@/components/CustomCssEditorField';
 import { CloudTag } from '@/components/FeatureTag';
-import { isCloud } from '@/consts/env';
+import { isCloud, isDevFeaturesEnabled } from '@/consts/env';
 import { latestProPlanId } from '@/consts/subscriptions';
 import { SubscriptionDataContext } from '@/contexts/SubscriptionDataProvider';
 import Card from '@/ds-components/Card';
@@ -19,6 +19,7 @@ import { buildCloudUpsellUrl, ossUpsellEntries } from '@/utils/oss-upsell';
 import type { SignInExperienceForm } from '../../../types';
 import FormSectionTitle from '../../components/FormSectionTitle';
 
+import CustomUiCspForm from './CustomUiCspForm';
 import styles from './index.module.scss';
 
 function OssBringYourUiCard() {
@@ -73,47 +74,53 @@ function CustomUiForm() {
   const shouldShowOssBringYourUi = !isCloud;
 
   return (
-    <Card>
-      <FormSectionTitle title="custom_ui.title" />
-      <CustomCssEditorField />
-      {isCloud && (
-        <FormField
-          title="sign_in_exp.custom_ui.bring_your_ui_title"
-          description={
-            <Trans
-              components={{
-                a: (
-                  <TextLink
-                    targetBlank="noopener"
-                    href={getDocumentationUrl('/docs/recipes/customize-sie/bring-your-ui')}
-                  />
-                ),
-              }}
-            >
-              {t('sign_in_exp.custom_ui.bring_your_ui_description')}
-            </Trans>
-          }
-          descriptionPosition="top"
-          featureTag={{
-            isVisible: !isBringYourUiEnabled,
-            plan: latestProPlanId,
-          }}
-        >
-          <Controller
-            name="customUiAssets"
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <CustomUiAssetsUploader
-                disabled={!isBringYourUiEnabled}
-                value={value}
-                onChange={onChange}
-              />
-            )}
-          />
-        </FormField>
-      )}
-      {shouldShowOssBringYourUi && <OssBringYourUiCard />}
-    </Card>
+    <>
+      <Card>
+        <FormSectionTitle title="custom_ui.css_code_editor_title" />
+        <CustomCssEditorField />
+      </Card>
+      <Card>
+        <FormSectionTitle title="custom_ui.bring_your_ui_title" />
+        {isCloud && (
+          <FormField
+            title="sign_in_exp.custom_ui.bring_your_ui_title"
+            description={
+              <Trans
+                components={{
+                  a: (
+                    <TextLink
+                      targetBlank="noopener"
+                      href={getDocumentationUrl('/docs/recipes/customize-sie/bring-your-ui')}
+                    />
+                  ),
+                }}
+              >
+                {t('sign_in_exp.custom_ui.bring_your_ui_description')}
+              </Trans>
+            }
+            descriptionPosition="top"
+            featureTag={{
+              isVisible: !isBringYourUiEnabled,
+              plan: latestProPlanId,
+            }}
+          >
+            <Controller
+              name="customUiAssets"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <CustomUiAssetsUploader
+                  disabled={!isBringYourUiEnabled}
+                  value={value}
+                  onChange={onChange}
+                />
+              )}
+            />
+          </FormField>
+        )}
+        {isCloud && isDevFeaturesEnabled && <CustomUiCspForm isDisabled={!isBringYourUiEnabled} />}
+        {shouldShowOssBringYourUi && <OssBringYourUiCard />}
+      </Card>
+    </>
   );
 }
 
