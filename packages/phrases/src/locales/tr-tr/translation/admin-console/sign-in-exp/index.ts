@@ -231,6 +231,7 @@ const sign_in_exp = {
         username: 'Kullanıcı adınızı güncelleyin',
         password: 'Yeni bir parola ayarlayın',
         social: 'Oturum açmak için bir sosyal hesap bağlayın',
+        social_change: 'Başka bir bağlı sosyal hesaba geçin',
         social_remove: 'Bağlı sosyal hesabı kaldırın',
         authenticator_app:
           'Çok faktörlü kimlik doğrulama için yeni bir doğrulayıcı uygulaması ayarlayın',

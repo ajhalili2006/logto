@@ -364,6 +364,38 @@
             "description": "The identity was added successfully."
           }
         }
+      },
+      "put": {
+        "operationId": "ReplaceMyAccountIdentity",
+        "summary": "Replace a user identity",
+        "description": "Replace (upsert) an identity (social identity) for the user. Creates the identity if absent, replaces it otherwise. Idempotent. Unlike POST, this allows replacing an existing identity for the same social target. When replacing with a different social user ID, previously stored third-party tokens for the old identity are cleared. A logto-verification-id header is required for checking sensitive permissions, and a verification record for the social identity is required.",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "properties": {
+                  "newIdentifierVerificationRecordId": {
+                    "description": "The identifier verification record ID for the new social identity ownership verification."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "The identity was replaced successfully."
+          },
+          "400": {
+            "description": "The request body is invalid or the social identity field is not editable."
+          },
+          "401": {
+            "description": "Permission denied, identity verification is required or insufficient scope."
+          },
+          "422": {
+            "description": "The new verification record is invalid or the identity is already in use."
+          }
+        }
       }
     },
     "/api/my-account/identities/{target}": {
