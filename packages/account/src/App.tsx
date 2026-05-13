@@ -296,7 +296,9 @@ const App = () => (
           UserScope.Profile,
           UserScope.Email,
           UserScope.Phone,
+          UserScope.Address,
           UserScope.Identities,
+          UserScope.CustomData,
         ],
       }}
     >
